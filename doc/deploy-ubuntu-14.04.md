@@ -137,6 +137,11 @@ server {
   location / {
     try_files $uri $uri/ /index.php?$args;
   }
+ 
+  location ~ /files/.*\.php$ {
+      deny all;
+      return 403;
+  }
 
   location ~* \.(js|css|png|jpg|jpeg|gif|ico|woff)$ {
           expires 1w;

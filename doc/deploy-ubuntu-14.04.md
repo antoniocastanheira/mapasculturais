@@ -8,6 +8,9 @@ As linhas que começam com **$** são executadas com o usuário criado para roda
 ### 1. Instalando os pacotes necessários para o funcionamento do sistema
 Primeiro instalamos os pacotes via apt
 ```BASH
+# Atualiza os repositórios do sistema
+@ apt-get update
+
 # dependências diversas
 @ apt-get install git curl nodejs npm ruby
 
@@ -38,7 +41,7 @@ Instalando os minificadores de código Javascript e CSS: uglify-js, uglifycss e 
 
 Instalando o SASS, utilizado para compilar os arquivos CSS
 ```BASH
-@ gem install sass
+@ gem install sass --no-rdoc --no-ri
 ```
 
 ### 2. Clonando o repositório
@@ -121,7 +124,7 @@ $ mkdir mapasculturais/src/files
 ```
 
 #### Configuração do nginx
-Precisamos criar o *virtual host* do nginx para a aplicação. Para isto crie, como root, o arquivo **/etc/nginx/sites-available/mapas.conf** com o conteudo abaixo:
+Precisamos criar o *virtual host* do nginx para a aplicação. Para isto crie, como root, o arquivo **/etc/nginx/sites-available/mapas.conf** com o conteudo abaixo, alterando o valor de *meu.dominio.gov.br* para o seu :
 ```
 server {
   set $site_name meu.dominio.gov.br;
@@ -136,6 +139,11 @@ server {
 
   location / {
     try_files $uri $uri/ /index.php?$args;
+  }
+  
+  location ~ /files/.*\.php$ {
+      deny all;
+      return 403;
   }
 
   location ~* \.(js|css|png|jpg|jpeg|gif|ico|woff)$ {
@@ -154,6 +162,8 @@ server {
   charset utf-8;
 }
 
+  client_max_body_size 100M;
+
 server {
   listen *:80;
   server_name www.meu.dominio.gov.br;
@@ -161,7 +171,7 @@ server {
 }
 ```
 
-Crie o linkpara habilitar o virtual host
+Crie o link para habilitar o virtual host
 ```BASH
 ln -s /etc/nginx/sites-available/mapas.conf /etc/nginx/sites-enabled/mapas.conf
 ```
